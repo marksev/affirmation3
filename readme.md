@@ -29,7 +29,7 @@ A beautiful Flutter app for daily affirmations organized by categories.
 ## Getting Started
 
 ### Prerequisites
-- Flutter SDK >=3.19.0
+- Flutter SDK >=3.22.0
 - Dart SDK >=3.3.0
 
 ### Installation
@@ -43,7 +43,7 @@ Run `flutter build apk --release` to build a release APK.
 ## Dependencies
 - flutter
 - cupertino_icons: ^1.0.6
-- google_fonts: ^6.2.1
+- google_fonts: ^6.3.0
 
 ## GitHub Actions
 This project includes a GitHub Actions workflow that automatically builds an APK on every push to main branch. The APK is uploaded as an artifact named `affirmation_app-release.apk`.
