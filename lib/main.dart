@@ -1,8 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+class FavoritesProvider extends ChangeNotifier {
+  final Set<String> _favorites = <String>{};
+
+  Set<String> get favorites => Set.unmodifiable(_favorites);
+
+  bool isFavorite(String affirmation) {
+    return _favorites.contains(affirmation);
+  }
+
+  void toggleFavorite(String affirmation) {
+    if (_favorites.contains(affirmation)) {
+      _favorites.remove(affirmation);
+    } else {
+      _favorites.add(affirmation);
+    }
+    notifyListeners();
+  }
+}
 
 void main() {
-  runApp(const AffirmationApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => FavoritesProvider(),
+      child: const AffirmationApp(),
+    ),
+  );
 }
 
 class AffirmationApp extends StatelessWidget {
@@ -101,6 +126,20 @@ class HomeScreen extends StatelessWidget {
         ),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FavoritesScreen(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.favorite),
+            tooltip: 'Favorites',
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -199,10 +238,16 @@ class AffirmationCategory {
   final Color color;
 }
 
-class AffirmationsScreen extends StatelessWidget {
+class AffirmationsScreen extends StatefulWidget {
   const AffirmationsScreen({super.key, required this.category});
 
   final AffirmationCategory category;
+
+  @override
+  State<AffirmationsScreen> createState() => _AffirmationsScreenState();
+}
+
+class _AffirmationsScreenState extends State<AffirmationsScreen> {
 
   Map<String, List<String>> get affirmationData => {
     'Love': [
@@ -377,24 +422,25 @@ class AffirmationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final affirmations = affirmationData[category.name] ?? [];
+    final affirmations = affirmationData[widget.category.name] ?? [];
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${category.name} Affirmations',
+          '${widget.category.name} Affirmations',
           style: GoogleFonts.poppins(
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor: category.color.withOpacity(0.1),
-        foregroundColor: category.color,
+        backgroundColor: widget.category.color.withOpacity(0.1),
+        foregroundColor: widget.category.color,
       ),
       body: PageView.builder(
         scrollDirection: Axis.vertical,
         itemCount: affirmations.length,
         itemBuilder: (context, index) {
+          final affirmation = affirmations[index];
           return Container(
             width: double.infinity,
             height: double.infinity,
@@ -403,8 +449,8 @@ class AffirmationsScreen extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  category.color.withOpacity(0.05),
-                  category.color.withOpacity(0.15),
+                  widget.category.color.withOpacity(0.05),
+                  widget.category.color.withOpacity(0.15),
                 ],
               ),
             ),
@@ -415,13 +461,13 @@ class AffirmationsScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      category.icon,
+                      widget.category.icon,
                       size: 64,
-                      color: category.color.withOpacity(0.7),
+                      color: widget.category.color.withOpacity(0.7),
                     ),
                     const SizedBox(height: 32),
                     Text(
-                      affirmations[index],
+                      affirmation,
                       style: GoogleFonts.poppins(
                         fontSize: 28,
                         fontWeight: FontWeight.w500,
@@ -431,18 +477,162 @@ class AffirmationsScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
+                    Consumer<FavoritesProvider>(
+                      builder: (context, favoritesProvider, child) {
+                        final isFavorite = favoritesProvider.isFavorite(affirmation);
+                        return IconButton(
+                          onPressed: () {
+                            favoritesProvider.toggleFavorite(affirmation);
+                          },
+                          icon: Icon(
+                            isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: isFavorite ? Colors.red : widget.category.color.withOpacity(0.6),
+                            size: 32,
+                          ),
+                          tooltip: isFavorite ? 'Remove from favorites' : 'Add to favorites',
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
                     Text(
                       '${index + 1} of ${affirmations.length}',
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: category.color.withOpacity(0.6),
+                        color: widget.category.color.withOpacity(0.6),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class FavoritesScreen extends StatelessWidget {
+  const FavoritesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Favorite Affirmations',
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: Colors.red.withOpacity(0.1),
+        foregroundColor: Colors.red,
+      ),
+      body: Consumer<FavoritesProvider>(
+        builder: (context, favoritesProvider, child) {
+          final favorites = favoritesProvider.favorites.toList();
+          
+          if (favorites.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.favorite_border,
+                    size: 64,
+                    color: Colors.grey.withOpacity(0.5),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No favorite affirmations yet',
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      color: Colors.grey.withOpacity(0.7),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Add affirmations to favorites by tapping the heart icon',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey.withOpacity(0.6),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return PageView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: favorites.length,
+            itemBuilder: (context, index) {
+              final affirmation = favorites[index];
+              return Container(
+                width: double.infinity,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.red.withOpacity(0.05),
+                      Colors.red.withOpacity(0.15),
+                    ],
+                  ),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.favorite,
+                          size: 64,
+                          color: Colors.red.withOpacity(0.7),
+                        ),
+                        const SizedBox(height: 32),
+                        Text(
+                          affirmation,
+                          style: GoogleFonts.poppins(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w500,
+                            height: 1.4,
+                            color: Colors.black87,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 32),
+                        IconButton(
+                          onPressed: () {
+                            favoritesProvider.toggleFavorite(affirmation);
+                          },
+                          icon: const Icon(
+                            Icons.favorite,
+                            color: Colors.red,
+                            size: 32,
+                          ),
+                          tooltip: 'Remove from favorites',
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          '${index + 1} of ${favorites.length}',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.red.withOpacity(0.6),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
