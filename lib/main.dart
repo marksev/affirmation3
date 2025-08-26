@@ -391,42 +391,55 @@ class AffirmationsScreen extends StatelessWidget {
         backgroundColor: category.color.withOpacity(0.1),
         foregroundColor: category.color,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
+      body: PageView.builder(
+        scrollDirection: Axis.vertical,
         itemCount: affirmations.length,
         itemBuilder: (context, index) {
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            elevation: 2,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    category.color.withOpacity(0.05),
-                    category.color.withOpacity(0.1),
-                  ],
-                ),
+          return Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  category.color.withOpacity(0.05),
+                  category.color.withOpacity(0.15),
+                ],
               ),
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                leading: CircleAvatar(
-                  backgroundColor: category.color.withOpacity(0.2),
-                  child: Icon(
-                    category.icon,
-                    color: category.color,
-                    size: 20,
-                  ),
-                ),
-                title: Text(
-                  affirmations[index],
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    height: 1.4,
-                  ),
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      category.icon,
+                      size: 64,
+                      color: category.color.withOpacity(0.7),
+                    ),
+                    const SizedBox(height: 32),
+                    Text(
+                      affirmations[index],
+                      style: GoogleFonts.poppins(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w500,
+                        height: 1.4,
+                        color: Colors.black87,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    Text(
+                      '${index + 1} of ${affirmations.length}',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: category.color.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
