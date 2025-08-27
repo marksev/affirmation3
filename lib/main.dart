@@ -220,7 +220,7 @@ final Map<String, List<String>> affirmationData = {
 };
 
 // Global categories list to be shared between screens
-final List<AffirmationCategory> categories = const [
+const List<AffirmationCategory> categories = [
   AffirmationCategory(
     name: 'Love',
     icon: Icons.favorite,
