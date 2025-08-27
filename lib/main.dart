@@ -291,8 +291,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late List<Map<String, dynamic>> shuffledAffirmations;
+
+  @override
+  void initState() {
+    super.initState();
+    shuffledAffirmations = _createShuffledAffirmations();
+  }
+
   // Create a list of all affirmations with their associated category information
-  List<Map<String, dynamic>> get allAffirmations {
+  List<Map<String, dynamic>> _createShuffledAffirmations() {
     final List<Map<String, dynamic>> result = [];
     for (final category in categories) {
       final affirmations = affirmationData[category.name] ?? [];
@@ -303,14 +311,12 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     }
-    result.shuffle(); // Randomize the order
+    result.shuffle(); // Randomize the order once
     return result;
   }
 
   @override
   Widget build(BuildContext context) {
-    final shuffledAffirmations = allAffirmations;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
