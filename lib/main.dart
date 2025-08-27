@@ -493,15 +493,6 @@ class _AffirmationsScreenState extends State<AffirmationsScreen> {
                         );
                       },
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      '${index + 1} of ${affirmations.length}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: widget.category.color.withOpacity(0.6),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -617,15 +608,6 @@ class FavoritesScreen extends StatelessWidget {
                             size: 32,
                           ),
                           tooltip: 'Remove from favorites',
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          '${index + 1} of ${favorites.length}',
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.red.withOpacity(0.6),
-                          ),
                         ),
                       ],
                     ),
