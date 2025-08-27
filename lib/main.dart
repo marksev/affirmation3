@@ -328,18 +328,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const CategoriesScreen(),
-              ),
-            );
-          },
-          icon: const Icon(Icons.category),
-          tooltip: 'Categories',
-        ),
         actions: [
           IconButton(
             onPressed: () {
@@ -425,6 +413,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                 tooltip: isFavorite ? 'Remove from favorites' : 'Add to favorites',
                               );
                             },
+                          ),
+                          const SizedBox(height: 24),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const CategoriesScreen(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.category),
+                            label: Text(
+                              'Categories',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: category.color.withOpacity(0.1),
+                              foregroundColor: category.color,
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: category.color.withOpacity(0.3)),
+                              ),
+                            ),
                           ),
                         ],
                       ),
